@@ -26,6 +26,9 @@ from robobrowser import RoboBrowser
 import urllib
 import logging
 import re
+import shutil
+import os
+import zipfile
 
 
 VERSION="0.1.0" # MAJOR.MINOR.PATCH | http://semver.org
@@ -104,6 +107,11 @@ def main():
             pass
         else:
             raise
+
+    # Init project skeleton
+    srcDir = os.path.abspath("_NEW_PROJECT_TEMPLATE")
+    dstDir = os.path.abspath(projectName)
+    shutil.copytree(srcDir, dstDir)
 
     return
 
