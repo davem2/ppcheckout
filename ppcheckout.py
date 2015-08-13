@@ -71,49 +71,34 @@ def main():
     badWordsURL = "http://www.pgdp.net/projects/{}/bad_words.txt".format(projectId)
     imagesURL = "http://www.pgdp.net/c/tools/download_images.php?projectid={}&dummy={}images.zip".format(projectId, projectId)
     textURL = "http://www.pgdp.net/projects/{}/{}.zip".format(projectId, projectId)
-
-    try:
-        urllib.request.urlretrieve(goodWordsURL,"good_words.txt")
-    except urllib.error.HTTPError as e:
-        if e.code == 404:
-            logging.warning("No good_words.txt at {}".format(goodWordsURL))
-            pass
-        else:
-            raise
-
-    try:
-        urllib.request.urlretrieve(badWordsURL,"bad_words.txt")
-    except urllib.error.HTTPError as e:
-        if e.code == 404:
-            logging.warning("No bad_words.txt at {}".format(badWordsURL))
-            pass
-        else:
-            raise
-
-    try:
-        urllib.request.urlretrieve(imagesURL,"images.zip")
-    except urllib.error.HTTPError as e:
-        if e.code == 404:
-            logging.error("HTTP Error 404: Not Found {}".format(imagesURL))
-            pass
-        else:
-            raise
-
-    try:
-        urllib.request.urlretrieve(textURL,"text.zip")
-    except urllib.error.HTTPError as e:
-        if e.code == 404:
-            logging.error("HTTP Error 404: Not Found {}".format(textURL))
-            pass
-        else:
-            raise
+    downloadFile(goodWordsURL,"good_words.txt")
+    downloadFile(badWordsURL,"bad_words.txt")
+    downloadFile(imagesURL,"images.zip")
+    downloadFile(textURL,"text.zip")
 
     # Init project skeleton
     srcDir = os.path.abspath("_NEW_PROJECT_TEMPLATE")
     dstDir = os.path.abspath(projectName)
     shutil.copytree(srcDir, dstDir)
 
+    # Copy/unzip project files
+    zipText = zipfile.ZipFile("text.zip","r")
+    zipImages = zipfile.ZipFile("images.zip","r")
+
+    print (zipText.names)
+
     return
+
+
+def downloadFile( src, dest ):
+    try:
+        urllib.request.urlretrieve(src,dest)
+    except urllib.error.HTTPError as e:
+        if e.code == 404:
+            logging.error("Error downloading {}\nHTTP 404: Not Found {}".format(dest,src))
+            pass
+        else:
+            raise
 
 
 def generateProjectName( s ):
