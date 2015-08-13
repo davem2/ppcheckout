@@ -49,8 +49,10 @@ def main():
     # Process command line arguments
     projectId = args['<projectid>']
     projectName = args['<projectname>']
+    logging.info("Checking out project {} to {}".format(projectId,projectName))
 
     # Parse project page for title and author
+    logging.info("Parsing project page for {}".format(projectId))
     projectURL = "http://www.pgdp.net/c/project.php?id={}".format(projectId)
     browser = RoboBrowser()
     browser.open(projectURL)
@@ -67,6 +69,7 @@ def main():
     print(projectName)
 
     # Download project files
+    logging.info("Downloading project files for {} by {}".format(title,author))
     goodWordsURL = "http://www.pgdp.net/projects/{}/good_words.txt".format(projectId)
     badWordsURL = "http://www.pgdp.net/projects/{}/bad_words.txt".format(projectId)
     imagesURL = "http://www.pgdp.net/c/tools/download_images.php?projectid={}&dummy={}images.zip".format(projectId, projectId)
@@ -77,11 +80,13 @@ def main():
     downloadFile(textURL,"text.zip")
 
     # Init project skeleton
+    logging.info("Building project base structure")
     srcDir = os.path.abspath("_NEW_PROJECT_TEMPLATE")
     dstDir = os.path.abspath(projectName)
     shutil.copytree(srcDir, dstDir)
 
     # Copy/unzip project files
+    logging.info("Adding project files")
     zipText = zipfile.ZipFile("text.zip","r")
     zipImages = zipfile.ZipFile("images.zip","r")
 
@@ -91,6 +96,7 @@ def main():
 
 
 def downloadFile( src, dest ):
+    logging.info("Saving {} to {}".format(src,dest))
     try:
         urllib.request.urlretrieve(src,dest)
     except urllib.error.HTTPError as e:
