@@ -60,14 +60,9 @@ def main():
     projectInfo = browser.find('table',id='project_info_table')
     title = projectInfo.find('b',text="Title").parent.next_sibling.string
     author = projectInfo.find('b',text="Author").parent.next_sibling.string
-    print(title)
-    print(author)
 
     if not projectName:
         projectName = generateProjectName(title)
-
-    print(projectId)
-    print(projectName)
 
     # Download project files
     logging.info("Downloading project files for {} by {}".format(title,author))
@@ -78,7 +73,7 @@ def main():
 
     # Init project skeleton
     logging.info("Building project base structure")
-    srcDir = os.path.abspath("_NEW_PROJECT_TEMPLATE")
+    srcDir = os.path.abspath(os.path.join(os.path.dirname(__file__), "_NEW_PROJECT_TEMPLATE"))
     dstDir = os.path.abspath(projectName)
     shutil.copytree(srcDir, dstDir)
 
@@ -90,6 +85,17 @@ def main():
     zipImages.extractall(path=os.path.abspath("{}/pngs/".format(projectName)))
     moveFiles(glob.glob(os.path.abspath("{}/pngs/*.jpg".format(projectName))), os.path.abspath("{}/originals/illustrations/".format(projectName)))
     shutil.copy(os.path.abspath("{}/originals/{}".format(projectName,"{}.txt".format(projectId))),os.path.abspath("{}/{}-src.txt".format(projectName,projectName)))
+
+    # Convert illustrations
+    files = glob.glob(os.path.abspath("{}/originals/illustrations/*.jpg".format(projectName)))
+    logging.info("Converting illustrations to lossless format")
+    for f in files:
+        cl = shlex.split("mogrify -format png {}".format(f))
+        proc=subprocess.Popen(cl)
+        proc.wait()
+        if( proc.returncode != 0 ):
+            logging.error("Command failed: {}".format(commandline))
+            commandErrorCount += 1
 
     return
 
