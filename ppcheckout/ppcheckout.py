@@ -8,7 +8,7 @@ Usage:
   ppcheckout -h | --help
   ppcheckout --version
 
-Translates pgdp.org formatted text files into ppgen syntax.
+Automates the initial setup of a pgdp.net post processing project.
 
 Examples:
   ppcheckout projectID509579cf64be8
@@ -73,7 +73,7 @@ def main():
 
     # Init project skeleton
     logging.info("Building project base structure")
-    srcDir = os.path.abspath(os.path.join(os.path.dirname(__file__), "_NEW_PROJECT_TEMPLATE"))
+    srcDir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)),"_NEW_PROJECT_TEMPLATE"))
     dstDir = os.path.abspath(projectName)
     shutil.copytree(srcDir, dstDir)
 
