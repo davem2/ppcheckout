@@ -29,6 +29,7 @@ import re
 import shutil
 import os
 import zipfile
+import glob
 
 
 VERSION="0.1.0" # MAJOR.MINOR.PATCH | http://semver.org
@@ -70,12 +71,8 @@ def main():
 
     # Download project files
     logging.info("Downloading project files for {} by {}".format(title,author))
-    goodWordsURL = "http://www.pgdp.net/projects/{}/good_words.txt".format(projectId)
-    badWordsURL = "http://www.pgdp.net/projects/{}/bad_words.txt".format(projectId)
     imagesURL = "http://www.pgdp.net/c/tools/download_images.php?projectid={}&dummy={}images.zip".format(projectId, projectId)
     textURL = "http://www.pgdp.net/projects/{}/{}.zip".format(projectId, projectId)
-    downloadFile(goodWordsURL,"good_words.txt")
-    downloadFile(badWordsURL,"bad_words.txt")
     downloadFile(imagesURL,"images.zip")
     downloadFile(textURL,"text.zip")
 
@@ -89,10 +86,18 @@ def main():
     logging.info("Adding project files")
     zipText = zipfile.ZipFile("text.zip","r")
     zipImages = zipfile.ZipFile("images.zip","r")
-
-    print (zipText.names)
+    zipText.extractall(path=os.path.abspath("{}/originals/".format(projectName)))
+    zipImages.extractall(path=os.path.abspath("{}/pngs/".format(projectName)))
+    moveFiles(glob.glob(os.path.abspath("{}/pngs/*.jpg".format(projectName))), os.path.abspath("{}/originals/illustrations/".format(projectName)))
+    shutil.copy(os.path.abspath("{}/originals/{}".format(projectName,"{}.txt".format(projectId))),os.path.abspath("{}/{}-src.txt".format(projectName,projectName)))
 
     return
+
+
+def moveFiles( files, dest ):
+    for f in files:
+        print(f)
+        shutil.move(f,dest)
 
 
 def downloadFile( src, dest ):
