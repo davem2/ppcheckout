@@ -30,6 +30,8 @@ import shutil
 import os
 import zipfile
 import glob
+import shlex
+import subprocess
 
 
 VERSION="0.1.0" # MAJOR.MINOR.PATCH | http://semver.org
@@ -65,7 +67,7 @@ def main():
         projectName = generateProjectName(title)
 
     # Download project files
-    logging.info("Downloading project files for {} by {}".format(title,author))
+    logging.info("Downloading project files for '{}' by {}".format(title,author))
     imagesURL = "http://www.pgdp.net/c/tools/download_images.php?projectid={}&dummy={}images.zip".format(projectId, projectId)
     textURL = "http://www.pgdp.net/projects/{}/{}.zip".format(projectId, projectId)
     downloadFile(imagesURL,"images.zip")
@@ -85,6 +87,7 @@ def main():
     zipImages.extractall(path=os.path.abspath("{}/pngs/".format(projectName)))
     moveFiles(glob.glob(os.path.abspath("{}/pngs/*.jpg".format(projectName))), os.path.abspath("{}/originals/illustrations/".format(projectName)))
     shutil.copy(os.path.abspath("{}/originals/{}".format(projectName,"{}.txt".format(projectId))),os.path.abspath("{}/{}-src.txt".format(projectName,projectName)))
+    moveFiles(glob.glob(os.path.abspath("*.zip".format(projectName))), os.path.abspath("{}/originals/".format(projectName)))
 
     # Convert illustrations
     files = glob.glob(os.path.abspath("{}/originals/illustrations/*.jpg".format(projectName)))
@@ -102,7 +105,7 @@ def main():
 
 def moveFiles( files, dest ):
     for f in files:
-        print(f)
+        logging.info("Moving file {} to {}".format(f,dest))
         shutil.move(f,dest)
 
 
@@ -128,11 +131,6 @@ def generateProjectName( s ):
     name = re.sub(" ","-",name)
     name = re.sub("-{2,}","-",name)
     words = name.split("-")
-    #print(words)
-    #print(min(3,len(words)))
-    #print(words[0:min(3,len(words))])
-    #print("-".join(words[0:min(3,len(words))]))
-    print(len(name))
     wc = len(words)
     maxNameLength = 30
     while( len(name) > maxNameLength and wc > 0 ):
