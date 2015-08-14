@@ -87,20 +87,34 @@ def main():
     zipImages.extractall(path=os.path.abspath("{}/pngs/".format(projectName)))
     moveFiles(glob.glob(os.path.abspath("{}/pngs/*.jpg".format(projectName))), os.path.abspath("{}/originals/illustrations/".format(projectName)))
     shutil.copy(os.path.abspath("{}/originals/{}".format(projectName,"{}.txt".format(projectId))),os.path.abspath("{}/{}-src.txt".format(projectName,projectName)))
-    moveFiles(glob.glob(os.path.abspath("*.zip".format(projectName))), os.path.abspath("{}/originals/".format(projectName)))
+    moveFiles(glob.glob(os.path.abspath("*.zip")), os.path.abspath("{}/originals/".format(projectName)))
 
     # Convert illustrations
     files = glob.glob(os.path.abspath("{}/originals/illustrations/*.jpg".format(projectName)))
     logging.info("Converting illustrations to lossless format")
     for f in files:
-        cl = shlex.split("mogrify -format png {}".format(f))
-        proc=subprocess.Popen(cl)
-        proc.wait()
-        if( proc.returncode != 0 ):
-            logging.error("Command failed: {}".format(commandline))
-            commandErrorCount += 1
+        shellCommand("mogrify -format png {}".format(f))
+
+    # Initialize git repo
+    projectPath = os.path.abspath("{}/".format(projectName))
+    shellCommand("git init",cwd=projectPath)
+    shellCommand("git add {}-src.txt".format(projectName),cwd=projectPath)
+    shellCommand('git commit -m "ppcheckout: Initial version"',cwd=projectPath)
+
+    # Convert to UTF-8
+    shellCommand("recode ISO-8859-1..UTF-8 {}".format(os.path.abspath("{}/{}-src.txt".format(projectName,projectName))))
+    shellCommand('git commit -am "ppcheckout: Convert to UTF-8"',cwd=projectPath)
 
     return
+
+
+def shellCommand( s, cwd=None ):
+    logging.info("Executing shell command: {}".format(s))
+    cl = shlex.split(s)
+    proc=subprocess.Popen(cl,cwd=cwd)
+    proc.wait()
+    if( proc.returncode != 0 ):
+        logging.error("Command failed: {}".format(commandline))
 
 
 def moveFiles( files, dest ):
@@ -138,6 +152,7 @@ def generateProjectName( s ):
         wc = wc-1
 
     return name
+
 
 if __name__ == "__main__":
     main()
