@@ -97,15 +97,30 @@ def main():
 
     # Initialize git repo
     projectPath = os.path.abspath("{}/".format(projectName))
+    projectFilePath = os.path.abspath("{}/{}-src.txt".format(projectName,projectName))
     shellCommand("git init",cwd=projectPath)
     shellCommand("git add {}-src.txt".format(projectName),cwd=projectPath)
     shellCommand('git commit -m "ppcheckout: Initial version"',cwd=projectPath)
 
     # Convert to UTF-8
     shellCommand("recode ISO-8859-1..UTF-8 {}".format(os.path.abspath("{}/{}-src.txt".format(projectName,projectName))))
-    shellCommand('git commit -am "ppcheckout: Convert to UTF-8"',cwd=projectPath)
+    prependText('', projectFilePath) # convert to native line endings
+    shellCommand('git commit -am "ppcheckout: Convert to UTF-8, native line endings"',cwd=projectPath)
+
+    # Add title
+    titleTxt = ".dt {}, by {}—A Project Gutenberg eBook\n".format(title,author)
+    prependText(titleTxt, projectFilePath)
+    shellCommand('git commit -am "ppcheckout: Add title"',cwd=projectPath)
 
     return
+
+
+def prependText( s, fn ):
+    with open(fn,'r') as f:
+        t = f.read()
+    with open(fn,'w') as f:
+        f.write(s)
+        f.write(t)
 
 
 def shellCommand( s, cwd=None ):
@@ -114,7 +129,7 @@ def shellCommand( s, cwd=None ):
     proc=subprocess.Popen(cl,cwd=cwd)
     proc.wait()
     if( proc.returncode != 0 ):
-        logging.error("Command failed: {}".format(commandline))
+        logging.error("Command failed: {}".format(s))
 
 
 def moveFiles( files, dest ):
