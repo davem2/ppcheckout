@@ -52,6 +52,7 @@ def main():
     # Process command line arguments
     projectId = args['<projectid>']
     projectName = args['<projectname>']
+    projectId = re.search("(projectID[A-Fa-f0-9]+)",projectId).group(1)
     logging.info("Checking out project {} to {}".format(projectId,projectName))
 
     # Parse project page for title and author
@@ -153,15 +154,16 @@ def downloadFile( src, dest ):
 
 
 def generateProjectName( s ):
-    name = s.lower()
+    name = re.sub("P[123]","",s)
+    name = name.lower()
     name = re.sub(" +[&] +","-",name)
     name = re.sub("[^a-z0-9- ]","",name)
-    name = re.sub("P[123]","",name)
     name = re.sub("^(the |\w )","",name)
     name = re.sub("^ +","",name)
     name = re.sub(" {2,}","",name)
     name = re.sub(" ","-",name)
     name = re.sub("-{2,}","-",name)
+    name = re.sub("(^-|-$)","",name)
     words = name.split("-")
     wc = len(words)
     maxNameLength = 30
@@ -169,6 +171,7 @@ def generateProjectName( s ):
         name = "-".join(words[0:min(wc,len(words))])
         wc = wc-1
 
+    print(name)
     return name
 
 
