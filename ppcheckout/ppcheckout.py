@@ -95,6 +95,8 @@ def main():
     for f in files:
         shellCommand("mogrify -format png {}".format(f))
 
+    # Update Makefile with project name
+
     # Initialize git repo
     projectPath = os.path.abspath("{}/".format(projectName))
     projectFilePath = os.path.abspath("{}/{}-src.txt".format(projectName,projectName))
@@ -154,6 +156,7 @@ def generateProjectName( s ):
     name = s.lower()
     name = re.sub(" +[&] +","-",name)
     name = re.sub("[^a-z0-9- ]","",name)
+    name = re.sub("P[123]","",name)
     name = re.sub("^(the |\w )","",name)
     name = re.sub("^ +","",name)
     name = re.sub(" {2,}","",name)
