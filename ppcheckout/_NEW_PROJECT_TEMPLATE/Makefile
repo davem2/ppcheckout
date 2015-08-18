@@ -1,4 +1,3 @@
-PROJECTNAME=replaceme
 DROPBOXDIR=/home/david/Dropbox
 DROPBOXLINK=https://www.dropbox.com/sh/2or8zucpgjvixkf/AACqw_svhgpx5i2N2anJNcmra?dl=0
 SRDIR=$(DROPBOXDIR)/Public/sr/$(PROJECTNAME)
@@ -150,7 +149,7 @@ release: compressimages
 	zip -9 $(PROJECTNAME).zip ./images/*.jpg ./images/*.jpeg ./images/*.png ./images/*.gif
 
 workspace:
-	@geany $(PROJECTNAME)-src.txt ../_NEW_PROJECT_TEMPLATE/todo.txt &
+	@geany $(PROJECTNAME)-src.txt ../notes/checklist.txt &
 	@firefox -new-tab -b $(PROJECTNAME).html &
 	@mcomix pngs/* &
 	@thunar $$PWD &

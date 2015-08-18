@@ -97,10 +97,11 @@ def main():
         shellCommand("mogrify -format png {}".format(f))
 
     # Update Makefile with project name
-
-    # Initialize git repo
     projectPath = os.path.abspath("{}/".format(projectName))
     projectFilePath = os.path.abspath("{}/{}-src.txt".format(projectName,projectName))
+    prependText('PROJECTNAME={}'.format(projectName), os.path.abspath("{}/Makefile".format(projectName))
+
+    # Initialize git repo
     shellCommand("git init",cwd=projectPath)
     shellCommand("git add {}-src.txt".format(projectName),cwd=projectPath)
     shellCommand('git commit -m "ppcheckout: Initial version"',cwd=projectPath)
@@ -171,7 +172,6 @@ def generateProjectName( s ):
         name = "-".join(words[0:min(wc,len(words))])
         wc = wc-1
 
-    print(name)
     return name
 
 
