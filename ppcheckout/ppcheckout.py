@@ -34,10 +34,10 @@ import shlex
 import subprocess
 
 
-VERSION="0.1.0" # MAJOR.MINOR.PATCH | http://semver.org
+__version__="0.1.0" # MAJOR.MINOR.PATCH | http://semver.org
 
 def main():
-    args = docopt(__doc__, version="ppcheckout v{}".format(VERSION))
+    args = docopt(__doc__, version="ppcheckout v{}".format(__version__))
 
     # Configure logging
     logLevel = logging.INFO #default
