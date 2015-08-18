@@ -34,7 +34,11 @@ import shlex
 import subprocess
 
 
-__version__="0.1.0" # MAJOR.MINOR.PATCH | http://semver.org
+__appname__ = "ppcheckout"
+__author__  = "David Maranhao"
+__license__ = "MIT"
+__version__ = "0.1.0" # MAJOR.MINOR.PATCH | http://semver.org
+
 
 def main():
     args = docopt(__doc__, version="ppcheckout v{}".format(__version__))
@@ -81,25 +85,27 @@ def main():
     shutil.copytree(srcDir, dstDir)
 
     # Copy/unzip project files
+    projectPath = os.path.abspath("{}/".format(projectName))
+    projectFilePath = os.path.join(projectPath,"{}-src.txt".format(projectName))
+    print(projectPath)
+    print(projectFilePath)
     logging.info("Adding project files")
     zipText = zipfile.ZipFile("text.zip","r")
     zipImages = zipfile.ZipFile("images.zip","r")
-    zipText.extractall(path=os.path.abspath("{}/originals/".format(projectName)))
-    zipImages.extractall(path=os.path.abspath("{}/pngs/".format(projectName)))
-    moveFiles(glob.glob(os.path.abspath("{}/pngs/*.jpg".format(projectName))), os.path.abspath("{}/originals/illustrations/".format(projectName)))
-    shutil.copy(os.path.abspath("{}/originals/{}".format(projectName,"{}.txt".format(projectId))),os.path.abspath("{}/{}-src.txt".format(projectName,projectName)))
-    moveFiles(glob.glob(os.path.abspath("*.zip")), os.path.abspath("{}/originals/".format(projectName)))
+    zipText.extractall(path=os.path.join(projectPath,"originals/"))
+    zipImages.extractall(path=os.path.join(projectPath,"pngs/"))
+    moveFiles(glob.glob(os.path.join(projectPath,"pngs/*.jpg")), os.path.join(projectPath,"originals/illustrations/"))
+    shutil.copy(os.path.join(projectPath,"originals/{}".format("{}.txt".format(projectId))),projectFilePath)
+    moveFiles(glob.glob(os.path.abspath("*.zip")), os.path.join(projectPath,"originals/"))
 
     # Convert illustrations
-    files = glob.glob(os.path.abspath("{}/originals/illustrations/*.jpg".format(projectName)))
+    files = glob.glob(os.path.join(projectPath,"originals/illustrations/*.jpg"))
     logging.info("Converting illustrations to lossless format")
     for f in files:
         shellCommand("mogrify -format png {}".format(f))
 
     # Update Makefile with project name
-    projectPath = os.path.abspath("{}/".format(projectName))
-    projectFilePath = os.path.abspath("{}/{}-src.txt".format(projectName,projectName))
-    prependText('PROJECTNAME={}'.format(projectName), os.path.abspath("{}/Makefile".format(projectName))
+    prependText('PROJECTNAME={}'.format(projectName), os.path.join(projectPath,"Makefile"))
 
     # Initialize git repo
     shellCommand("git init",cwd=projectPath)
