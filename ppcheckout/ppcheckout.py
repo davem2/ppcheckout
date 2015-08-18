@@ -85,21 +85,21 @@ def main():
     shutil.copytree(srcDir, dstDir)
 
     # Copy/unzip project files
-    projectPath = os.path.abspath("{}/".format(projectName))
+    projectPath = os.path.abspath(projectName)
     projectFilePath = os.path.join(projectPath,"{}-src.txt".format(projectName))
     print(projectPath)
     print(projectFilePath)
     logging.info("Adding project files")
     zipText = zipfile.ZipFile("text.zip","r")
     zipImages = zipfile.ZipFile("images.zip","r")
-    zipText.extractall(path=os.path.join(projectPath,"originals/"))
-    zipImages.extractall(path=os.path.join(projectPath,"pngs/"))
-    moveFiles(glob.glob(os.path.join(projectPath,"pngs/*.jpg")), os.path.join(projectPath,"originals/illustrations/"))
-    shutil.copy(os.path.join(projectPath,"originals/{}".format("{}.txt".format(projectId))),projectFilePath)
-    moveFiles(glob.glob(os.path.abspath("*.zip")), os.path.join(projectPath,"originals/"))
+    zipText.extractall(path=os.path.join(projectPath,"originals"))
+    zipImages.extractall(path=os.path.join(projectPath,"pngs"))
+    moveFiles(glob.glob(os.path.join(projectPath,"pngs","*.jpg")), os.path.join(projectPath,"originals","illustrations"))
+    shutil.copy(os.path.join(projectPath,"originals","{}.txt".format(projectId)),projectFilePath)
+    moveFiles(glob.glob(os.path.abspath("*.zip")), os.path.join(projectPath,"originals"))
 
     # Convert illustrations
-    files = glob.glob(os.path.join(projectPath,"originals/illustrations/*.jpg"))
+    files = glob.glob(os.path.join(projectPath,"originals","illustrations","*.jpg"))
     logging.info("Converting illustrations to lossless format")
     for f in files:
         shellCommand("mogrify -format png {}".format(f))
@@ -113,7 +113,7 @@ def main():
     shellCommand('git commit -m "ppcheckout: Initial version"',cwd=projectPath)
 
     # Convert to UTF-8
-    shellCommand("recode ISO-8859-1..UTF-8 {}".format(os.path.abspath("{}/{}-src.txt".format(projectName,projectName))))
+    shellCommand("recode ISO-8859-1..UTF-8 {}".format(os.path.join(projectPath,"{}-src.txt".format(projectName))))
     prependText('', projectFilePath) # convert to native line endings
     shellCommand('git commit -am "ppcheckout: Convert to UTF-8, native line endings"',cwd=projectPath)
 
@@ -134,7 +134,7 @@ def prependText( s, fn ):
 
 
 def shellCommand( s, cwd=None ):
-    logging.info("Executing shell command: {}".format(s))
+    logging.info("Executing shell command:\n{}".format(s))
     cl = shlex.split(s)
     proc=subprocess.Popen(cl,cwd=cwd)
     proc.wait()
