@@ -105,7 +105,7 @@ def main():
         shellCommand("mogrify -format png {}".format(f))
 
     # Update Makefile with project name
-    prependText('PROJECTNAME={}'.format(projectName), os.path.join(projectPath,"Makefile"))
+    prependText('PROJECTNAME={}\n'.format(projectName), os.path.join(projectPath,"Makefile"))
 
     # Initialize git repo
     shellCommand("git init",cwd=projectPath)
