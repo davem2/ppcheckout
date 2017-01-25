@@ -22,6 +22,7 @@ $(PROJECTNAME).html: $(PROJECTNAME)-src.txt
 
 clean:
 	touch $(PROJECTNAME)-src.txt
+	touch originals/illustrations/*
 
 errorcheck check: all
 	@rm -f errorcheck-results.txt
@@ -145,7 +146,7 @@ release: compressimages
 	cp $(PROJECTNAME)-lat1.txt $(PROJECTNAME).txt
 	todos -e $(PROJECTNAME).txt $(PROJECTNAME)-utf8.txt $(PROJECTNAME).html
 	rm -f $(PROJECTNAME).zip
-	zip -9 $(PROJECTNAME).zip $(PROJECTNAME).txt $(PROJECTNAME)-utf8.txt $(PROJECTNAME).html
+	zip -9 $(PROJECTNAME).zip $(PROJECTNAME)-utf8.txt $(PROJECTNAME).html
 	zip -9 $(PROJECTNAME).zip ./images/*.jpg ./images/*.jpeg ./images/*.png ./images/*.gif
 
 workspace:
