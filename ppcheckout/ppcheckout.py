@@ -82,7 +82,11 @@ def main():
     logging.info("Building project base structure")
     srcDir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)),"_NEW_PROJECT_TEMPLATE"))
     dstDir = os.path.abspath(projectName)
-    shutil.copytree(srcDir, dstDir)
+    try:
+        shutil.copytree(srcDir, dstDir)
+    except FileExistsError as e:
+        logging.error("{} - {}".format(e.filename,e.strerror))
+
 
     # Copy/unzip project files
     projectPath = os.path.abspath(projectName)
@@ -97,6 +101,11 @@ def main():
     moveFiles(glob.glob(os.path.join(projectPath,"pngs","*.jpg")), os.path.join(projectPath,"originals","illustrations"))
     shutil.copy(os.path.join(projectPath,"originals","{}.txt".format(projectId)),projectFilePath)
     moveFiles(glob.glob(os.path.abspath("*.zip")), os.path.join(projectPath,"originals"))
+
+    try:
+        os.remove(os.path.join(projectPath,"originals","{}_TEI.txt".format(projectId)))
+    except OSError as e:
+        logging.error("{} - {}".format(e.filename,e.strerror))
 
     # Convert illustrations
     files = glob.glob(os.path.join(projectPath,"originals","illustrations","*.jpg"))
