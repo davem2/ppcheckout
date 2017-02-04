@@ -62,7 +62,7 @@ def main():
     # Parse project page for title and author
     logging.info("Parsing project page for {}".format(projectId))
     projectURL = "http://www.pgdp.net/c/project.php?id={}".format(projectId)
-    browser = RoboBrowser()
+    browser = RoboBrowser(history=True, parser='html.parser')
     browser.open(projectURL)
     projectInfo = browser.find('table',id='project_info_table')
     title = projectInfo.find('b',text="Title").parent.next_sibling.string
